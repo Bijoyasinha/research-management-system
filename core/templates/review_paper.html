@@ -1,0 +1,27 @@
+<div class="container mt-5">
+  <h3>Review Paper: {{ paper.title }}</h3>
+  <p><strong>Student:</strong> {{ paper.student.username }}</p>
+  <a
+    href="{{ paper.file.url }}"
+    class="btn btn-outline-primary mb-3"
+    target="_blank"
+    >Download/View Paper</a
+  >
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>Update Status</label>
+      <select name="status" class="form-select">
+        <option value="Approved">Approve</option>
+        <option value="Rejected">Reject</option>
+        <option value="Under Review">Under Review</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label>Professor's Feedback</label>
+      <textarea name="feedback" class="form-control" rows="4"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Submit Review</button>
+  </form>
+</div>
