@@ -40,15 +40,21 @@ def review_paper(request, paper_id):
     return render(request, 'review_paper.html', {'paper': paper})
 
 
-
 def login_view(request):
     if request.method == 'POST':
         u = request.POST.get('username')
         p = request.POST.get('password')
-        user = authenticate(username=u, password=p)
+        
+        
+        user = authenticate(request, username=u, password=p) 
+        
         if user is not None:
             login(request, user)
-            return redirect('dashboard') 
+            return redirect('dashboard')
+        else:
+        
+            return render(request, 'login.html', {'error': 'Invalid username or password'})
+            
     return render(request, 'login.html')
 def dashboard(request):
 
