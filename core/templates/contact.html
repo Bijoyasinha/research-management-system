@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .contact-container {
+        padding: 60px 10%;
+        background-color: #0f172a;
+        color: white;
+        display: flex;
+        gap: 50px;
+        flex-wrap: wrap;
+    }
+    .contact-info { flex: 1; min-width: 300px; }
+    .contact-form-box { 
+        flex: 1; 
+        min-width: 300px; 
+        background: rgba(30, 41, 59, 0.8); 
+        padding: 40px; 
+        border-radius: 15px; 
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; color: #cbd5e1; }
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        background: #0f172a;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+        border-radius: 8px;
+    }
+    .submit-btn {
+        background: #FF7800;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+    }
+</style>
+
+<div class="contact-container">
+    <div class="contact-info">
+        <h1 style="color: #FF7800; font-size: 2.5rem; margin-bottom: 20px;">Get In Touch</h1>
+        <p style="color: #64748b; margin-bottom: 30px;">Have questions about the RMS Portal? We are here to help.</p>
+        
+        <div style="margin-bottom: 20px;">
+            <p><strong>📍 Location:</strong> Metropolitan University, Sylhet</p>
+            <p><strong>📧 Email:</strong> support@mu.edu.bd</p>
+            <p><strong>📞 Phone:</strong> +880 1234-567890</p>
+        </div>
+    </div>
+
+    <div class="contact-form-box">
+        <form action="#" method="POST">
+            {% csrf_token %} <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea rows="5" name="message" placeholder="How can we help?" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

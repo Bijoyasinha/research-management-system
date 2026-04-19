@@ -1,198 +1,79 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Review Paper - RMS</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
+{% extends "base.html" %}
 
-    <style>
-      body {
-        background-color: #f0f2f5;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
-      /* কার্ডের প্রিমিয়াম লুক */
-      .review-card {
-        border: none;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        background: #ffffff;
-      }
-      /* হেডার গ্রেডিয়েন্ট */
-      .card-header-gradient {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-        color: white;
-        padding: 25px;
-        border: none;
-      }
-      /* ইনপুট বক্স ডিজাইন */
-      .form-control,
-      .form-select {
-        border-radius: 10px;
-        border: 1px solid #e2e8f0;
-        padding: 12px;
-        background-color: #f8fafc;
-      }
-      .form-control:focus,
-      .form-select:focus {
-        background-color: #fff;
-        border-color: #4e73df;
-        box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
-      }
-      /* বাটন ডিজাইন */
-      .btn-submit {
-        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
-        border: none;
-        color: white;
-        padding: 12px;
-        font-weight: bold;
-        border-radius: 10px;
-        transition: transform 0.2s;
-      }
-      .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(28, 200, 138, 0.3);
-        color: white;
-      }
-      .btn-download {
-        border-radius: 10px;
-        font-weight: 500;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container py-5">
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
-          <div class="card review-card">
-            <div class="card-header-gradient text-center">
-              <h3 class="mb-0 fw-bold">
-                <i class="fas fa-file-signature me-2"></i>Reviewing Research
-                Paper
-              </h3>
-            </div>
+{% block content %}
+<style>
+    .review-container {
+        max-width: 750px; margin: 40px auto;
+        background: rgba(22, 31, 48, 0.8); backdrop-filter: blur(10px);
+        border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden;
+    }
+    .review-header { background: #3B82F6; padding: 15px; text-align: center; color: white; }
+    .review-body { padding: 30px; color: #e2e8f0; }
+    
+    .pra-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important; border-radius: 10px; padding: 10px; font-size: 13px;
+    }
+    .label-text { color: #FFCB82; font-size: 13px; font-weight: 600; margin-bottom: 8px; display: block; }
+    .label-text i { font-size: 12px; margin-right: 5px; }
 
-            <div class="card-body p-4 p-md-5">
-              <div class="mb-4">
-                <h4 class="text-dark fw-bold mb-2">{{ paper.title }}</h4>
-                <div class="d-flex align-items-center text-muted">
-                  <i class="fas fa-user-graduate me-2 text-primary"></i>
-                  <span
-                    >Student:
-                    <strong
-                      >{{ paper.student.username|default:"Bijoya" }}</strong
-                    ></span
-                  >
-                </div>
-              </div>
+    .btn-download-small {
+        border: 1.5px solid #3B82F6; color: #3B82F6; background: transparent;
+        border-radius: 8px; padding: 6px 15px; font-size: 12px; font-weight: 600;
+        text-decoration: none; display: inline-block; transition: 0.3s;
+    }
+    .btn-download-small:hover { background: #3B82F6; color: white; }
 
-              <div class="d-grid mb-4">
-                <a
-                  href="{{ paper.file.url }}"
-                  class="btn btn-outline-primary btn-download py-2"
-                >
-                  <i class="fas fa-cloud-download-alt me-2"></i>Download &
-                  Verify Document
-                </a>
-              </div>
+    .btn-submit-final {
+        background: #FF7800; color: white; border: none; padding: 12px;
+        width: 100%; border-radius: 10px; font-weight: 700; font-size: 14px; margin-top: 20px;
+        cursor: pointer; transition: 0.3s;
+    }
+    .btn-submit-final:hover { background: #e66c00; transform: translateY(-2px); }
+</style>
 
-              <hr class="my-4 opacity-50" />
-
-              <form method="POST">
-                {% csrf_token %}
-
-                <div class="row">
-                  <div class="col-md-12 mb-4">
-                    <label class="form-label fw-bold text-secondary">
-                      <i class="fas fa-tasks me-2"></i>Update Decision Status
-                    </label>
-                    <select name="status" class="form-select border-2">
-                      <option
-                        value="pending"
-                        {%
-                        if
-                        paper.status=""
-                        ="pending"
-                        %}selected{%
-                        endif
-                        %}
-                      >
-                        🕒 Pending Review
-                      </option>
-                      <option
-                        value="Approved"
-                        {%
-                        if
-                        paper.status=""
-                        ="Approved"
-                        %}selected{%
-                        endif
-                        %}
-                      >
-                        ✅ Approve Paper
-                      </option>
-                      <option
-                        value="Rejected"
-                        {%
-                        if
-                        paper.status=""
-                        ="Rejected"
-                        %}selected{%
-                        endif
-                        %}
-                      >
-                        ❌ Reject Paper
-                      </option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-12 mb-4">
-                    <label class="form-label fw-bold text-secondary">
-                      <i class="fas fa-comment-dots me-2"></i>Professor's
-                      Feedback
-                    </label>
-                    <textarea
-                      name="feedback"
-                      class="form-control"
-                      rows="5"
-                      placeholder="Write detailed feedback for the student..."
-                    >
-{{ paper.feedback }}</textarea
-                    >
-                  </div>
-                </div>
-
-                <div class="d-grid">
-                  <button
-                    type="submit"
-                    class="btn btn-submit shadow-sm text-uppercase"
-                  >
-                    <i class="fas fa-check-double me-2"></i>Finalize Review
-                  </button>
-                </div>
-              </form>
-
-              <div class="text-center mt-4">
-                <a
-                  href="{% url 'dashboard' %}"
-                  class="text-decoration-none text-muted small"
-                >
-                  <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="review-container shadow-lg">
+    <div class="review-header">
+        <h5 class="mb-0"><i class="fas fa-file-contract me-2"></i> Review Research Paper</h5>
     </div>
-  </body>
-</html>
+
+    <div class="review-body">
+        <div class="mb-4">
+            <h3 class="fw-bold text-white mb-1">{{ paper.title }}</h3>
+            <p class="text-muted small">
+                <i class="fas fa-user-graduate"></i> Student: <strong>{{ paper.student.username }}</strong>
+            </p>
+            <a href="{{ paper.file.url }}" class="btn-download-small" target="_blank">
+                <i class="fas fa-download"></i> Download PDF
+            </a>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.1);">
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <label class="label-text"><i class="fas fa-tasks"></i> Change Status</label>
+                    <select name="status" class="form-select pra-input">
+                        <option value="pending" {% if paper.status == 'pending' %}selected{% endif %} style="color: black;">Pending</option>
+                        <option value="approved" {% if paper.status == 'approved' %}selected{% endif %} style="color: black;">Approved</option>
+                        <option value="rejected" {% if paper.status == 'rejected' %}selected{% endif %} style="color: black;">Rejected</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="label-text"><i class="fas fa-edit"></i> Reviewer's Feedback</label>
+                    <textarea name="review_text" rows="5" class="form-control pra-input" 
+                              placeholder="Add comments for the student...">{{ paper.teacher_review|default:'' }}</textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit-final">
+                Update Paper Status & Feedback
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

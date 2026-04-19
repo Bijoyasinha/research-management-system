@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .about-container {
+        padding: 60px 10%;
+        background-color: #0f172a;
+        color: white;
+        min-height: 80vh;
+    }
+    .about-header { text-align: center; margin-bottom: 50px; }
+    .about-header h1 { font-size: 3rem; color: #FF7800; font-weight: 800; }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+    .feature-card {
+        background: rgba(30, 41, 59, 0.5);
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: 0.3s;
+    }
+    .feature-card:hover { transform: translateY(-10px); border-color: #FF7800; }
+    .feature-card h3 { color: #FF7800; margin-bottom: 15px; }
+</style>
+
+<div class="about-container">
+    <div class="about-header">
+        <h1>About RMS Portal</h1>
+        <p style="color: #64748b; font-size: 1.2rem;">Empowering Academic Integrity at Metropolitan University</p>
+    </div>
+
+    <div class="about-content">
+        <p style="line-height: 1.8; font-size: 1.1rem; text-align: justify;">
+            The Research Management System (RMS) is a specialized platform developed to streamline the academic research submission process. 
+            Our mission is to provide students and faculty of Metropolitan University with a robust tool for real-time plagiarism analysis and efficient reviewer feedback.
+        </p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>🔍 Plagiarism Check</h3>
+                <p>Automated analysis to ensure your research work is original and meets academic standards.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Live Dashboard</h3>
+                <p>Track your submission status from 'Pending' to 'Approved' with an interactive visual dashboard.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📝 Easy Citation</h3>
+                <p>Generate APA style citations instantly for your approved research papers with one click.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

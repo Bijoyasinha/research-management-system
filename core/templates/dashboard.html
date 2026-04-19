@@ -1,146 +1,197 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Research Dashboard</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
+{% extends "base.html" %}
 
-    <style>
-      body {
-        background-color: #f8f9fa;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
-      .sidebar {
-        height: 100vh;
-        background: linear-gradient(
-          180deg,
-          #1e293b 0%,
-          #0f172a 100%
-        ) !important;
-        color: white;
-        position: fixed;
-        width: 250px;
-        padding-top: 20px;
-        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
-      }
+{% block content %}
+<style>
+    .dashboard-container { padding: 40px 5%; background-color: #0f172a; min-height: 100vh; color: white; }
+    
+    /* Header Styling */
+    .dashboard-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: flex-start; 
+        margin-bottom: 40px; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 20px;
+    }
+    .header-left h1 { font-size: 2.5rem; font-weight: 800; margin: 0; color: #FF7800; }
+    .header-left p { color: #94a3b8; margin: 5px 0 0 0; }
+    .header-right { text-align: right; }
+    .header-right h2 { font-size: 1.2rem; margin: 0; color: white; }
 
-      .sidebar a {
-        color: #cbd5e1 !important;
-        text-decoration: none;
-        display: block;
-        padding: 12px 20px;
-        margin: 5px 15px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-      }
-      .sidebar a:hover {
-        background: rgba(59, 130, 246, 0.2);
-        color: #3b82f6 !important;
-        transform: translateX(5px);
-      }
-      .main-content {
-        margin-left: 250px;
-        padding: 30px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="sidebar">
-      <h4 class="text-center mb-4"><i class="fas fa-microscope"></i> RMS</h4>
-      <a href="/" class="active"><i class="fas fa-home me-2"></i> Dashboard</a>
-      <a href="/upload/"
-        ><i class="fas fa-cloud-upload-alt me-2"></i> Submit Paper</a
-      >
-      <a href="/admin/"><i class="fas fa-user-shield me-2"></i> Admin Panel</a>
-      <a href="/login/"><i class="fas fa-sign-in-alt me-2"></i> Login</a>
+    .new-submission-btn { background: #FF7800; color: white !important; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(255, 120, 0, 0.3); display: inline-block; margin-top: 10px; }
+    .new-submission-btn:hover { background: #e66c00; transform: translateY(-2px); }
+
+    /* Deadline & Review Card Styling */
+    .deadline-card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; min-width: 250px; flex: 1; transition: 0.3s; }
+    .deadline-card:hover { border-color: #FF7800; }
+    .deadline-input { background: #0f172a; color: white; border: 1px solid #334155; padding: 10px; border-radius: 6px; font-size: 0.85rem; width: 100%; margin-bottom: 12px; outline: none; }
+    .update-btn { background: #FF7800; border: none; color: white; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; text-decoration: none; display: inline-block; text-align: center; }
+    .update-btn:hover { background: #e66c00; }
+    
+    .review-btn { background: #3B82F6; }
+    .review-btn:hover { background: #2563EB; }
+
+    /* Stats Grid */
+    .analytics-section { display: flex; gap: 30px; margin-bottom: 40px; align-items: center; flex-wrap: wrap; }
+    .chart-box { background: rgba(30, 41, 59, 0.5); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 350px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; }
+    .stat-box { padding: 25px; border-radius: 15px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(30, 41, 59, 0.5); }
+    .stat-box .count { font-size: 2.5rem; font-weight: 900; display: block; }
+    .box-submitted { border-top: 5px solid #FF7800; } .box-submitted .count { color: #FF7800; }
+    .box-awaiting { border-top: 5px solid #00D2FF; } .box-awaiting .count { color: #00D2FF; }
+    .box-approved { border-top: 5px solid #00FF88; } .box-approved .count { color: #00FF88; }
+
+    /* Table & Badges */
+    .table-container { background: rgba(30, 41, 59, 0.8); border-radius: 12px; padding: 20px; overflow-x: auto; }
+    .custom-table { width: 100%; border-collapse: collapse; color: #cbd5e1; }
+    .custom-table th { text-align: left; padding: 15px; border-bottom: 2px solid #FF7800; color: white; }
+    .custom-table td { padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    
+    .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+    .badge-approved { background: rgba(0, 255, 136, 0.1); color: #00FF88; border: 1px solid #00FF88; }
+    .badge-pending { background: rgba(0, 210, 255, 0.1); color: #00D2FF; border: 1px solid #00D2FF; }
+    .badge-rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
+
+    .teacher-feedback { font-size: 0.85rem; color: #94a3b8; background: rgba(59, 130, 246, 0.1); padding: 10px; border-radius: 6px; margin-top: 5px; border-left: 3px solid #3B82F6; }
+</style>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="header-left">
+            {% if is_admin %}
+                <h1>Teacher Panel</h1>
+                <p>Managing Metropolitan University Research Portal</p>
+            {% else %}
+                <h1>Research Dashboard</h1>
+                <p>Welcome to your research portal</p>
+            {% endif %}
+        </div>
+        
+        <div class="header-right">
+            <h2>Welcome, {{ user.username }}</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Metropolitan University</p>
+            {% if not is_admin %}
+                <a href="{% url 'upload_paper' %}" class="new-submission-btn">+ New Submission</a>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="main-content">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark">Research Management Dashboard</h2>
-        <a href="/upload/" class="btn btn-primary px-4 py-2 shadow-sm">
-          <i class="fas fa-plus-circle me-1"></i> Submit New Paper
-        </a>
-      </div>
+    {% if is_admin %}
+    <div style="background: rgba(255, 120, 0, 0.05); border-left: 5px solid #FF7800; padding: 25px; margin-bottom: 40px; border-radius: 8px;">
+        <h3 style="color: #FF7800; margin-top: 0;"><i class="fas fa-calendar-alt"></i> Manage Submission Deadlines</h3>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+            {% for dept in departments %}
+                <div class="deadline-card">
+                    <span style="font-weight: 800; color: white; font-size: 1.1rem;">{{ dept.name }}</span>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin: 8px 0 18px 0;">
+                        Current Deadline: <br>
+                        <span style="color: #FF7800; font-weight: bold;">
+                            {{ dept.deadline|date:"d M, Y (h:i A)"|default:"Not Set" }}
+                        </span>
+                    </p>
+                    <form action="{% url 'update_deadline' dept.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="datetime-local" name="new_deadline" class="deadline-input" required>
+                        <button type="submit" class="update-btn">Set New Deadline</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
-      <div class="card shadow-sm">
-        <div class="card-body p-0">
-          <table class="table table-hover mb-0">
-            <thead class="table-dark">
-              <tr>
-                <th class="ps-4">Title</th>
-                <th>Department</th>
-                <th>Status</th>
-                <th>Plagiarism</th>
-                <th>Submitted On</th>
-                <th class="text-center">Action</th>
-              </tr>
+    <div class="analytics-section">
+        <div class="chart-box">
+            <canvas id="statusChart"></canvas>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box box-submitted">
+                <h3>Total Submissions</h3>
+                <span class="count">{{ papers|length }}</span>
+            </div>
+            <div class="stat-box box-awaiting">
+                <h3>Pending Review</h3>
+                <span class="count">{{ pending_count }}</span>
+            </div>
+            <div class="stat-box box-approved">
+                <h3>Approved</h3>
+                <span class="count">{{ approved_count }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Research Title</th>
+                    {% if is_admin %}<th>Student</th>{% endif %}
+                    <th>Status</th>
+                    <th>Feedback & Review</th>
+                    <th style="text-align: center;">Actions</th>
+                </tr>
             </thead>
             <tbody>
-              {% for paper in papers %}
-              <tr>
-                <td class="ps-4 fw-semibold">{{ paper.title }}</td>
-                <td>
-                  <span class="badge bg-info text-dark"
-                    >{{ paper.department }}</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="badge {% if paper.status == 'Pending' %}bg-warning{% else %}bg-success{% endif %}"
-                  >
-                    {{ paper.status }}
-                  </span>
-                </td>
-                <td>{{ paper.plagiarism_score }}%</td>
-                <td>{{ paper.submitted_at|date:"d M, Y" }}</td>
-                <td class="text-center">
-                  <a
-                    href="/review/{{ paper.id }}/"
-                    class="btn btn-sm btn-outline-dark"
-                  >
-                    <i class="fas fa-eye me-1"></i> Review
-                  </a>
-                </td>
-                <td>
-                  {% if paper.status == 'Approved' %}
-                  <span
-                    class="badge rounded-pill bg-success-subtle text-success border border-success px-3"
-                    >Approved</span
-                  >
-                  {% elif paper.status == 'Rejected' %}
-                  <span
-                    class="badge rounded-pill bg-danger-subtle text-danger border border-danger px-3"
-                    >Rejected</span
-                  >
-                  {% else %}
-                  <span
-                    class="badge rounded-pill bg-warning-subtle text-warning border border-warning px-3"
-                    >Pending</span
-                  >
-                  {% endif %}
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="6" class="text-center py-5 text-muted">
-                  <i class="fas fa-folder-open fa-3x mb-3"></i><br />
-                  No papers submitted yet.
-                </td>
-              </tr>
-              {% endfor %}
+                {% for paper in papers %}
+                <tr>
+                    <td style="color: white; font-weight: 500;">
+                        <i class="fas fa-file-alt" style="color: #FF7800; margin-right: 8px;"></i> {{ paper.title }}
+                    </td>
+                    {% if is_admin %}<td>{{ paper.student.username }}</td>{% endif %}
+                    <td>
+                        <span class="badge {% if paper.status == 'approved' or paper.status == 'Accepted' %}badge-approved{% elif paper.status == 'pending' %}badge-pending{% else %}badge-rejected{% endif %}">
+                            {{ paper.status }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if paper.teacher_review %}
+                            <div class="teacher-feedback">
+                                <strong>Sir Says:</strong> {{ paper.teacher_review }}
+                            </div>
+                        {% else %}
+                            <span style="color: #64748b; font-size: 0.8rem;">Waiting for review...</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center; display: flex; gap: 10px; justify-content: center;">
+                        {% if is_admin %}
+                            <a href="{% url 'review_paper' paper.id %}" class="update-btn review-btn" style="padding: 5px 12px; font-size: 0.8rem; width: auto;">Review</a>
+                        {% else %}
+                            <a href="{{ paper.file.url }}" class="update-btn" style="padding: 5px 12px; font-size: 0.8rem; width: auto;" target="_blank">View File</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">No research papers found.</td>
+                </tr>
+                {% endfor %}
             </tbody>
-          </table>
-        </div>
-      </div>
+        </table>
     </div>
-  </body>
-</html>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Approved', 'Pending', 'Rejected'],
+            datasets: [{
+                data: [{{ approved_count|default:0 }}, {{ pending_count|default:0 }}, {{ rejected_count|default:0 }}],
+                backgroundColor: ['#00FF88', '#00D2FF', '#ef4444'],
+                borderWidth: 0,
+            }]
+        },
+        options: { 
+            cutout: '75%', 
+            plugins: { 
+                legend: { 
+                    position: 'bottom', 
+                    labels: { color: 'white', padding: 20, font: { size: 12 } } 
+                } 
+            } 
+        }
+    });
+</script>
+{% endblock %}

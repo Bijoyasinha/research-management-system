@@ -1,0 +1,28 @@
+/* অ্যাডমিন প্যানেল ডার্ক এবং গ্লাস মোড */
+#header {
+    background: #0F172A !important;
+    color: #FF7800 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body {
+    background: #0F172A !important;
+    color: #94A3B8 !important;
+}
+
+.module h2, .module caption {
+    background: rgba(255, 120, 0, 0.1) !important;
+    color: #FF7800 !important;
+}
+
+/* আপনার সেই প্রিমিয়াম বাটন স্টাইল */
+.button, input[type=submit] {
+    background: #FF7800 !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #FF7800 !important;
+    transition: 0.3s;
+}
+
+.button:hover {
+    box-shadow: 0 0 15px rgba(255, 120, 0, 0.4);
+}
